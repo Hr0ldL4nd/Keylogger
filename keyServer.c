@@ -25,14 +25,11 @@ void decrypt() {
         perror("Cannot create the file\n");
         exit(EXIT_FAILURE);
     }
-    printf("\nantes do while\n");
-    printf("\n%s\n", fgets(buffer,sizeof(buffer),fin));
+    //printf("\n%s\n", fgets(buffer,sizeof(buffer),fin));
     while(fgets(buffer,sizeof(buffer),fin)!=NULL){
-        printf("\ndentro do while\n");
         n = strlen(buffer);
         for(i=0; i<n; i++){
             buffer[i] = buffer[i] + 45;
-            printf("\n%d\n", i);
         }
         fputs(buffer,fout);
     }
@@ -101,12 +98,8 @@ int main() {
     //Fecha o arquivo
     fclose(output_file);
 
-    printf("\npassei por aqui\n");
-
-    //Descriptograda os dados recebidos
+    //Descriptografa os dados recebidos
     decrypt();
-
-     printf("\ndescriptografei\n");
 
     // Fecha o socket    
     close(new_socket);
